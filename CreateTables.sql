@@ -13,7 +13,7 @@ SET time_zone = "+00:00";
 -- Table structure for table `baseline`
 --
 
-CREATE TABLE IF NOT EXISTS `baseline` (
+CREATE TABLE IF NOT EXISTS `superscan_baseline` (
   `file_path` varchar(200) NOT NULL,
   `file_hash` char(40) NOT NULL,
   `file_last_mod` char(19),
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `baseline` (
 -- Table structure for table `history`
 --
 
-CREATE TABLE IF NOT EXISTS `history` (
+CREATE TABLE IF NOT EXISTS `superscan_history` (
   `stamp`  char(19),
   `status` varchar(10) NOT NULL,
   `file_path` varchar(200) NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `history` (
 -- Table structure for table `scanned`
 --
 
-CREATE TABLE IF NOT EXISTS `scanned` (
+CREATE TABLE IF NOT EXISTS `superscan_scanned` (
   `scanned` char(19),
   `changes` int(11) NOT NULL DEFAULT '0',
   `acct` varchar(20) NOT NULL,
