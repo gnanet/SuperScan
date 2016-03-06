@@ -6,6 +6,7 @@
 	define('USER','User_Name');
 	define('PASS','Password for User_Name');
 	define('DATABASE','User_hashscan');
+	define('PREFIX','superscan_');
 	
 	$scandb = mysqli_connect(SERVER,USER,PASS,DATABASE);
 ?>
