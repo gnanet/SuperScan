@@ -5,6 +5,7 @@
 //		Account name does not need to match the real account name
 //			because the account is managed by the PATH definition
 $acct = 'MyAccount';
+$subscription = 'PleskDomain';
 
 //	Set SCAN_PATH (where the scanner starts)
 //		AND SCANNER_PATH (dir for the scanner scripts)
@@ -12,12 +13,12 @@ $acct = 'MyAccount';
 if ($_SERVER['REMOTE_ADDR']=='127.0.0.1')
 {
 //	***	define("SCAN_PATH", '{local Virtual Host}');
-	define("SCAN_PATH", 'X:/path/to/account/');
+	define("SCAN_PATH", '/var/www/vhosts');
 //	*** define("SCANNER_PATH", '{local path to}'.'/scandb.php}');
 	//	define("SCANNER_PATH", 'X:/path/to/superscan/');
 } else {
 	//	For security, set SCAN_PATH inside your webspace
-	define("SCAN_PATH", "/home/account/public_html/");
+	define("SCAN_PATH", "/var/www/vhosts/".$subscription);
 	// 	and SCANNER_PATH outside (NOT in public_html)	
 	//	define("SCANNER_PATH", "/home/account/superscan/");
 }
@@ -39,7 +40,7 @@ $report_out = false;
 $email_out = false;
 
 //	E-mail address(es) to send reports of change
-$addresses = array("user1@domain1.com", "user2@domain2.com");
+$addresses = array("support@localdomain.com", "user2@domain2.com");
 
 
 //	Extensions to fetch
@@ -54,7 +55,7 @@ $ext_array = array_map('strtolower',$ext_array);
 //		An empty array will return all extensions
 //      *** The $excl_ext array can only contain elements *** 
 //		*** if $ext array above is empty *** 
-$excl_array = array('ftpquota','txt','swf','fla');
+$excl_array = array('ftpquota','txt','swf','fla','log');
 //	Make extensions lower case for scanner comparison
 $excl_array = array_map('strtolower',$excl_array);
 
