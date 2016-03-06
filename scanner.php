@@ -32,7 +32,7 @@ $deleted = array();
 //	Limit first scan entries in history table
 
 //	Get date and time of last scan for report
-$last_scanned_records = @mysqli_query($scandb, "SELECT `scanned` FROM scanned WHERE `acct` = '$acct' ORDER BY `scanned` DESC LIMIT 1");
+$last_scanned_records = @mysqli_query($scandb, "SELECT `scanned` FROM " .PREFIX. "scanned WHERE `acct` = '$acct' ORDER BY `scanned` DESC LIMIT 1");
 if ($last_scanned_records && 0 < mysqli_num_rows($last_scanned_records))
 {
 	//	Get last timestamp
@@ -56,7 +56,7 @@ $start = microtime(true);
 // 	Read from database to obtain file paths, hash values and 
 //		last modified dates to compare against current files
 
-$baseline_results = @mysqli_query($scandb,"SELECT `file_path`, `file_hash`, `file_last_mod` FROM baseline WHERE `acct` = '$acct' ORDER BY `file_path` ASC");
+$baseline_results = @mysqli_query($scandb,"SELECT `file_path`, `file_hash`, `file_last_mod` FROM " .PREFIX. "baseline WHERE `acct` = '$acct' ORDER BY `file_path` ASC");
 
 if ($baseline_results) 
 {
@@ -140,18 +140,18 @@ while ($iter->valid())
 				$added[$file_path] = array('file_hash' => $current[$file_path]['file_hash'], 'file_last_mod' => $current[$file_path]['file_last_mod']);
 			
 				//	INSERT added record in baseline table
-				@mysqli_query($scandb, "INSERT INTO baseline SET `file_path` = '$file_path', `file_hash` = '" . $added[$file_path]['file_hash'] . "', `file_last_mod` = '" . $added[$file_path]['file_last_mod'] . "', `acct` = '$acct'");
+				@mysqli_query($scandb, "INSERT INTO " .PREFIX. "baseline SET `file_path` = '$file_path', `file_hash` = '" . $added[$file_path]['file_hash'] . "', `file_last_mod` = '" . $added[$file_path]['file_last_mod'] . "', `acct` = '$acct'");
 				if ($testing && mysqli_error($scandb)) echo mysqli_error($scandb);
 
 				//	INSERT added file record in history table
 				//		EXCEPT if $firstscan (to prevent unnecessary records)
 				if(!$firstscan) 
 				{
-					@mysqli_query($scandb, "INSERT INTO history SET `stamp` = '" . date('Y-m-d h:i:s') . "', `status` = 'Added', `file_path` = '$file_path', `hash_org` = 'Not Applicable', `hash_new` = '" . $added[$file_path]['file_hash'] . "', `file_last_mod` = '" . $added[$file_path]['file_last_mod'] . "', `acct` = '$acct'");
+					@mysqli_query($scandb, "INSERT INTO " .PREFIX. "history SET `stamp` = '" . date('Y-m-d h:i:s') . "', `status` = 'Added', `file_path` = '$file_path', `hash_org` = 'Not Applicable', `hash_new` = '" . $added[$file_path]['file_hash'] . "', `file_last_mod` = '" . $added[$file_path]['file_last_mod'] . "', `acct` = '$acct'");
 					if ($testing && mysqli_error($scandb)) echo mysqli_error($scandb);
 				}  else {
 					//	First Scan entry into history table
- 					@mysqli_query($scandb, "INSERT INTO history SET `stamp` = '" . date('Y-m-d h:i:s') . "', `status` = 'Added', `file_path` = 'FIRST SCAN (file listings inhibited)', `hash_org` = 'Not Applicable', `hash_new` = 'Not Applicable', `file_last_mod` = 'Not Applicable', `acct` = '$acct'");
+ 					@mysqli_query($scandb, "INSERT INTO " .PREFIX. "history SET `stamp` = '" . date('Y-m-d h:i:s') . "', `status` = 'Added', `file_path` = 'FIRST SCAN (file listings inhibited)', `hash_org` = 'Not Applicable', `hash_new` = 'Not Applicable', `file_last_mod` = 'Not Applicable', `acct` = '$acct'");
 					if ($testing && mysqli_error($scandb)) echo mysqli_error($scandb);
 				}	//	End of handling $added array entry
 
@@ -163,11 +163,11 @@ while ($iter->valid())
 					$altered[$file_path] = array('hash_org' => $baseline[$file_path]['file_hash'], 'hash_new' => $current[$file_path]['file_hash'], 'file_last_mod' => $current[$file_path]['file_last_mod']);
 				
 					//	UPDATE altered record in baseline
-					@mysqli_query($scandb,"UPDATE baseline SET `file_hash` = '" . $altered[$file_path]['hash_new'] . "', `file_last_mod` = '" . $altered[$file_path]['file_last_mod'] . "' WHERE `file_path` = '$file_path' AND `acct` = '$acct'");
+					@mysqli_query($scandb,"UPDATE " .PREFIX. "baseline SET `file_hash` = '" . $altered[$file_path]['hash_new'] . "', `file_last_mod` = '" . $altered[$file_path]['file_last_mod'] . "' WHERE `file_path` = '$file_path' AND `acct` = '$acct'");
 					if ($testing && mysqli_error($scandb)) echo mysqli_error($scandb);
 
 					//	INSERT altered file info in history table
-					@mysqli_query($scandb,"INSERT INTO history SET `stamp` = '" . date('Y-m-d h:i:s') . "', `status` = 'Altered', `file_path` = '$file_path', `hash_org` = '" . $altered[$file_path]['hash_org'] . "', `hash_new` = '" . $altered[$file_path]['hash_new'] . "', `file_last_mod` = '" . $altered[$file_path]['file_last_mod'] . "', `acct` = '$acct'");
+					@mysqli_query($scandb,"INSERT INTO " .PREFIX. "history SET `stamp` = '" . date('Y-m-d h:i:s') . "', `status` = 'Altered', `file_path` = '$file_path', `hash_org` = '" . $altered[$file_path]['hash_org'] . "', `hash_new` = '" . $altered[$file_path]['hash_new'] . "', `file_last_mod` = '" . $altered[$file_path]['file_last_mod'] . "', `acct` = '$acct'");
 					if ($testing && mysqli_error($scandb)) echo mysqli_error($scandb);
 				}
 			}
@@ -188,7 +188,7 @@ foreach($deleted as $key => $value)
 {
 	//	Handle DELETEd file
 	//	DELETE file from baseline table
-	mysqli_query($scandb,"DELETE FROM baseline WHERE `file_path` = '$key' LIMIT 1");
+	mysqli_query($scandb,"DELETE FROM " .PREFIX. "baseline WHERE `file_path` = '$key' LIMIT 1");
 	if ($testing && mysqli_error($scandb)) 
 	{
 		echo mysqli_error($scandb);
@@ -197,7 +197,7 @@ foreach($deleted as $key => $value)
 	}
 
 	//	Record deletion in history table
-	@mysqli_query($scandb, "INSERT INTO history SET `stamp` = '" . date('Y-m-d h:i:s') . "', `status` = 'Deleted', `file_path` = '$key', `hash_org` = '" . $deleted[$key]['file_hash'] . "', `hash_new` = 'Not Applicable', `file_last_mod` = '" . $deleted[$key]['file_last_mod'] . "', `acct` = '$acct'");
+	@mysqli_query($scandb, "INSERT INTO " .PREFIX. "history SET `stamp` = '" . date('Y-m-d h:i:s') . "', `status` = 'Deleted', `file_path` = '$key', `hash_org` = '" . $deleted[$key]['file_hash'] . "', `hash_new` = 'Not Applicable', `file_last_mod` = '" . $deleted[$key]['file_last_mod'] . "', `acct` = '$acct'");
 	if ($testing && mysqli_error($scandb)) echo mysqli_error($scandb);
 }
 //	End of Deleted file handling
@@ -244,18 +244,18 @@ if (0 == $count_changes)
     $path = "File structure is unchanged since last scan, script execution time $elapsed seconds.<br>The baseline contains $count_current files.\r\n";
 
 	//	Update history table
-	@mysqli_query($scandb,"INSERT INTO history SET `stamp` = '" . date('Y-m-d h:i:s') . "', `status` = 'Unchanged', `file_path` = '$path', `hash_org` = 'Not Applicable', `hash_new` = 'Not Applicable', `file_last_mod` = 'Not Applicable', `acct` = '$acct'");
+	@mysqli_query($scandb,"INSERT INTO " .PREFIX. "history SET `stamp` = '" . date('Y-m-d h:i:s') . "', `status` = 'Unchanged', `file_path` = '$path', `hash_org` = 'Not Applicable', `hash_new` = 'Not Applicable', `file_last_mod` = 'Not Applicable', `acct` = '$acct'");
 	if ($testing && mysqli_error($scandb)) echo mysqli_error($scandb);
 
 	// update scanned table
-	@mysqli_query($scandb,"INSERT INTO scanned SET `scanned` = '" . date('Y-m-d h:i:s') . "', `changes` = '$count_changes', `acct` = '$acct'");  
+	@mysqli_query($scandb,"INSERT INTO " .PREFIX. "scanned SET `scanned` = '" . date('Y-m-d h:i:s') . "', `changes` = '$count_changes', `acct` = '$acct'");  
 	if ($testing && mysqli_error($scandb)) echo mysqli_error($scandb);
 
 	$report .= "File structure is unchanged since last scan.\r\n\r\nThe baseline now contains $count_current files.\r\n\r\nScan executed in $elapsed seconds.";
 	
 } else {
 	
-	@mysqli_query($scandb,"INSERT INTO scanned SET `scanned` = '" . date('Y-m-d h:i:s') . "', `changes` = '$count_changes', `acct` = '$acct'");  
+	@mysqli_query($scandb,"INSERT INTO " .PREFIX. "scanned SET `scanned` = '" . date('Y-m-d h:i:s') . "', `changes` = '$count_changes', `acct` = '$acct'");  
 	if ($testing && mysqli_error($scandb)) echo mysqli_error($scandb);
 
 	$report .= "\r\n\r\nSummary:\r\n
@@ -270,10 +270,10 @@ Scan executed in $elapsed seconds.";
 }
 
 //	Clean-up history table and scanned table by deleting entries over 30 days old
-@mysqli_query($scandb,"DELETE FROM history WHERE `stamp` < DATE_SUB(NOW(), INTERVAL 30 DAY)");
+@mysqli_query($scandb,"DELETE FROM " .PREFIX. "history WHERE `stamp` < DATE_SUB(NOW(), INTERVAL 30 DAY)");
 if ($testing && mysqli_error($scandb)) echo "History table clean-up problem: " . mysqli_error($scandb) . "<br />";
 
-@mysqli_query($scandb,"DELETE FROM scanned WHERE `scanned` < DATE_SUB(NOW(), INTERVAL 30 DAY)");
+@mysqli_query($scandb,"DELETE FROM " .PREFIX. "scanned WHERE `scanned` < DATE_SUB(NOW(), INTERVAL 30 DAY)");
 if ($testing && mysqli_error($scandb)) echo "Scanned table clean-up problem: " . mysqli_error($scandb) . "<br />";
 
 //	End of Report preparation and clean-up
