@@ -10,7 +10,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `baseline`
+-- Table structure for table `superscan_baseline`
 --
 
 CREATE TABLE IF NOT EXISTS `superscan_baseline` (
@@ -24,20 +24,23 @@ CREATE TABLE IF NOT EXISTS `superscan_baseline` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `history`
+-- Table structure for table `superscan_history`
 --
 
 CREATE TABLE IF NOT EXISTS `superscan_history` (
-  `stamp`  char(19),
+  `hist_id` int(10) NOT NULL AUTO_INCREMENT,
+  `stamp` char(19) DEFAULT NULL,
   `status` varchar(10) NOT NULL,
   `file_path` varchar(200) NOT NULL,
   `hash_org` varchar(40) DEFAULT NULL,
   `hash_new` varchar(40) DEFAULT NULL,
-  `file_last_mod` char(19),
-  `acct` varchar(20) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  `file_last_mod` char(19) DEFAULT NULL,
+  `acct` varchar(20) NOT NULL,
+  PRIMARY KEY (`hist_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
+
 
 --
 -- Table structure for table `scanned`
