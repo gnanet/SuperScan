@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 
 //	INTRO
@@ -6,14 +7,37 @@
 //
 //	End of Intro
 
+if ($argc != 2 || in_array($argv[1], array('--help', '-help', '-h', '-?'))) {
+?>
+
+This is a command line PHP script with one option.
+
+  Usage:    <?php echo $argv[0]; ?> <option>
+      <option> can be some word you would like to print out. With the --help, -help, -h, or -? options, you can get this help.
+ <?php
+} else {
+    $dts = $argv[1];
+}
+
+
 //	CONFIGURE account for scan
-require('configure.php');
+if (file_exists('/usr/local/etc/superscan/configure_'.$dts.'.php')) {
+    require('/usr/local/etc/superscan/configure_'.$dts.'.php');
+} else {
+    echo 'Missing /usr/local/etc/superscan/configure_'.$dts.'.php';
+    exit;
+}
 
 //	INITIALIZE
 //	Initialization of scanner variables and tables
 
 //	Connect to database - $scandb is the returned handle
-require('scandb.php');
+if (file_exists('/usr/local/etc/superscan/scandb.php')) {
+	require('/usr/local/etc/superscan/scandb.php');
+} else {
+    echo 'Missing /usr/local/etc/superscan/scandb.php';
+    exit;
+}
 
 //	Clear and title the report variable before starting
 $report = "SuperScan File Check for $acct\r\n\r\n";
